@@ -1,15 +1,20 @@
-<img src=".github/logo.png" alt="Shadow logo" align="left" width="120" />
-
 # Shadow Hackathon
+
+<img src=".github/logo.png" alt="Shadow logo" width="120" />
+
+----
+
 [Shadow](https://tryshadow.xyz) is a developer platform that
 allows you to modify any contract to generate custom onchain data.
 
 This repo contains everything you need to get started writing
 your own shadow events:
 1. Example shadow contracts with shadow events.
-1. Example unit tests to test your shadow contracts.
-1. A CLI tool that allows you to run a (lite) shadow fork
+2. Example unit tests to test your shadow contracts.
+3. A CLI tool that allows you to run a (lite) shadow fork
 locally, and deploy a shadow contract to your hosted shadow fork.
+
+----
 
 ## Prerequisites
 1. Have [Foundry](https://github.com/foundry-rs/foundry) installed
