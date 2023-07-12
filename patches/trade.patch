@@ -1,124 +1,133 @@
 diff --git a/src/UniswapV2Router02/contracts/UniswapV2Router02.sol b/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
-index 68ca98c..f296c4f 100644
+index b183bc5..0b93a56 100644
 --- a/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
 +++ b/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
-@@ -11,6 +11,15 @@ import "./libraries/UniswapV2Library.sol";
- import "./libraries/TransferHelper.sol";
+@@ -16,6 +16,24 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+     address public immutable override factory;
+     address public immutable override WETH;
  
- contract UniswapV2Router02 is IUniswapV2Router02 {
-+	event Trade(
-+		string platformName,
-+		address contractAddress,
-+		address tokenInAddress,
-+		address tokenOutAddress,
-+		uint amountIn,
-+		uint amountOut,
-+		address senderAddress
-+	);
- 	using SafeMath for uint;
++    /// @notice Represents an exchange between two tokens
++    /// @param platformName The name of the platform the trade occurred on (e.g. "uniswap-v2")
++    /// @param contractAddress The address of the contract used to perform the trade
++    /// @param tokenInAddress The address of the token that was sent
++    /// @param tokenOutAddress The address of the token that was received
++    /// @param amountIn The amount of the token that was sent, denominated in that token's decimal places
++    /// @param amountOut The amount of the token that was received, denominated in that token's decimal places
++    /// @param senderAddress The address that initiated the trade
++    event Trade(
++        string platformName,
++        address contractAddress,
++        address tokenInAddress,
++        address tokenOutAddress,
++        uint256 amountIn,
++        uint256 amountOut,
++        address senderAddress
++    );
++
+     modifier ensure(uint256 deadline) {
+         require(deadline >= block.timestamp, "UniswapV2Router: EXPIRED");
+         _;
+@@ -238,6 +256,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
+         );
+         _swap(amounts, path, to);
++        emit Trade(
++            "uniswap-v2",
++            address(this),
++            path[0],
++            path[path.length - 1],
++            amountIn,
++            amounts[amounts.length - 1],
++            msg.sender
++        );
+     }
  
- 	address public immutable override factory;
-@@ -242,6 +251,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 			amounts[0]
- 		);
- 		_swap(amounts, path, to);
-+		emit Trade(
-+			"uniswap-v2",
-+			address(this),
-+			path[0],
-+			path[path.length - 1],
-+			amountIn,
-+			amounts[amounts.length - 1],
-+			msg.sender
-+		);
- 	}
+     function swapTokensForExactTokens(
+@@ -253,6 +280,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+             path[0], msg.sender, UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]
+         );
+         _swap(amounts, path, to);
++        emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
+     }
  
- 	function swapTokensForExactTokens(
-@@ -260,6 +278,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 			amounts[0]
- 		);
- 		_swap(amounts, path, to);
-+		emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
- 	}
+     function swapExactETHForTokens(uint256 amountOutMin, address[] calldata path, address to, uint256 deadline)
+@@ -269,6 +297,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         IWETH(WETH).deposit{value: amounts[0]}();
+         assert(IWETH(WETH).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
+         _swap(amounts, path, to);
++        emit Trade(
++            "uniswap-v2",
++            address(this),
++            path[0],
++            path[path.length - 1],
++            amounts[0],
++            amounts[amounts.length - 1],
++            msg.sender
++        );
+     }
  
- 	function swapExactETHForTokens(
-@@ -274,6 +293,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		IWETH(WETH).deposit{value: amounts[0]}();
- 		assert(IWETH(WETH).transfer(UniswapV2Library.pairFor(factory, path[0], path[1]), amounts[0]));
- 		_swap(amounts, path, to);
-+		emit Trade(
-+			"uniswap-v2",
-+			address(this),
-+			path[0],
-+			path[path.length - 1],
-+			amounts[0],
-+			amounts[amounts.length - 1],
-+			msg.sender
-+		);
- 	}
+     function swapTokensForExactETH(
+@@ -287,6 +324,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         _swap(amounts, path, address(this));
+         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
+         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
++        emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
+     }
  
- 	function swapTokensForExactETH(
-@@ -295,6 +323,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		_swap(amounts, path, address(this));
- 		IWETH(WETH).withdraw(amounts[amounts.length - 1]);
- 		TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
-+		emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
- 	}
+     function swapExactTokensForETH(
+@@ -305,6 +343,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         _swap(amounts, path, address(this));
+         IWETH(WETH).withdraw(amounts[amounts.length - 1]);
+         TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
++        emit Trade(
++            "uniswap-v2",
++            address(this),
++            path[0],
++            path[path.length - 1],
++            amountIn,
++            amounts[amounts.length - 1],
++            msg.sender
++        );
+     }
  
- 	function swapExactTokensForETH(
-@@ -316,6 +345,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		_swap(amounts, path, address(this));
- 		IWETH(WETH).withdraw(amounts[amounts.length - 1]);
- 		TransferHelper.safeTransferETH(to, amounts[amounts.length - 1]);
-+		emit Trade(
-+			"uniswap-v2",
-+			address(this),
-+			path[0],
-+			path[path.length - 1],
-+			amountIn,
-+			amounts[amounts.length - 1],
-+			msg.sender
-+		);
- 	}
+     function swapETHForExactTokens(uint256 amountOut, address[] calldata path, address to, uint256 deadline)
+@@ -323,6 +370,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         _swap(amounts, path, to);
+         // refund dust eth, if any
+         if (msg.value > amounts[0]) TransferHelper.safeTransferETH(msg.sender, msg.value - amounts[0]);
++        emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
+     }
  
- 	function swapETHForExactTokens(
-@@ -332,6 +370,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		_swap(amounts, path, to);
- 		// refund dust eth, if any
- 		if (msg.value > amounts[0]) TransferHelper.safeTransferETH(msg.sender, msg.value - amounts[0]);
-+		emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amounts[0], amountOut, msg.sender);
- 	}
+     // **** SWAP (supporting fee-on-transfer tokens) ****
+@@ -365,6 +413,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+             IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore) >= amountOutMin,
+             "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"
+         );
++        emit Trade(
++            "uniswap-v2",
++            address(this),
++            path[0],
++            path[path.length - 1],
++            amountIn,
++            IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore),
++            msg.sender
++        );
+     }
  
- 	// **** SWAP (supporting fee-on-transfer tokens) ****
-@@ -370,6 +409,15 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 			IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore) >= amountOutMin,
- 			"UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"
- 		);
-+		emit Trade(
-+			"uniswap-v2",
-+			address(this),
-+			path[0],
-+			path[path.length - 1],
-+			amountIn,
-+			IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore),
-+			msg.sender
-+		);
- 	}
+     function swapExactETHForTokensSupportingFeeOnTransferTokens(
+@@ -381,6 +438,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         _swapSupportingFeeOnTransferTokens(path, to);
+         uint256 amountOut = IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore);
+         require(amountOut >= amountOutMin, "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT");
++        emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amountIn, amountOut, msg.sender);
+     }
  
- 	function swapExactETHForTokensSupportingFeeOnTransferTokens(
-@@ -386,6 +434,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		_swapSupportingFeeOnTransferTokens(path, to);
- 		uint amountOut = IERC20(path[path.length - 1]).balanceOf(to).sub(balanceBefore);
- 		require(amountOut >= amountOutMin, "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT");
-+		emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amountIn, amountOut, msg.sender);
- 	}
+     function swapExactTokensForETHSupportingFeeOnTransferTokens(
+@@ -399,6 +457,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
+         require(amountOut >= amountOutMin, "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT");
+         IWETH(WETH).withdraw(amountOut);
+         TransferHelper.safeTransferETH(to, amountOut);
++        emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amountIn, amountOut, msg.sender);
+     }
  
- 	function swapExactTokensForETHSupportingFeeOnTransferTokens(
-@@ -402,6 +451,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
- 		require(amountOut >= amountOutMin, "UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT");
- 		IWETH(WETH).withdraw(amountOut);
- 		TransferHelper.safeTransferETH(to, amountOut);
-+		emit Trade("uniswap-v2", address(this), path[0], path[path.length - 1], amountIn, amountOut, msg.sender);
- 	}
- 
- 	// **** LIBRARY FUNCTIONS ****
+     // **** LIBRARY FUNCTIONS ****
