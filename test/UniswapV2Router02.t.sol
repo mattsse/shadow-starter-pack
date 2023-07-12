@@ -3,7 +3,7 @@ pragma solidity =0.6.6;
 pragma experimental ABIEncoderV2;
 
 import "forge-std/Test.sol";
-import "../src/UniswapV2Router02/contracts/Contract.sol";
+import "../src/UniswapV2Router02/contracts/UniswapV2Router02.sol";
 
 contract UniswapV2Router02Test is Test {
 	event Trade(
