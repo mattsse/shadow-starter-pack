@@ -4,14 +4,12 @@
 [Shadow](https://tryshadow.xyz) is a developer platform that
 allows you to modify any contract to generate custom onchain data.
 
-Using Shadow, you have the ability to add entirely new event
-logs. These modifications are made directly within contract
-source code, written in Solidity (or Vyper). You can then
-deploy your shadow contract on a forked chain which “shadows”
-mainnet transactions, where mainnet gas costs and contract
-size limitations are removed.
-
-See the [Shadow Technical Sheet](https://docs.google.com/document/d/1T_ra0tEO-j04yPvLlcqI4t2pJHjIJCa-BCY8lk1pISc/edit) for more details.
+This repo contains everything you need to get started writing
+your own shadow events:
+1. Example shadow contracts with shadow events.
+1. Example unit tests to test your shadow contracts.
+1. A CLI tool that allows you to run a (lite) shadow fork
+locally, and deploy a shadow contract to your hosted shadow fork.
 
 ## Prerequisites
 1. Have [Foundry](https://github.com/foundry-rs/foundry) installed
