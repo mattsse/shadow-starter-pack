@@ -1,3 +1,5 @@
+<img src=".github/logo.png" alt="Shadow logo" align="right" width="120" />
+
 # Shadow Hackathon
 TODO
 
