@@ -1,7 +1,7 @@
-diff --git a/src/UniswapV2Router02/contracts/UniswapV2Router02.sol b/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
+diff --git a/contracts/src/UniswapV2Router02/contracts/UniswapV2Router02.sol b/contracts/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
 index b183bc5..0b93a56 100644
---- a/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
-+++ b/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
+--- a/contracts/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
++++ b/contracts/src/UniswapV2Router02/contracts/UniswapV2Router02.sol
 @@ -16,6 +16,24 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
      address public immutable override factory;
      address public immutable override WETH;
