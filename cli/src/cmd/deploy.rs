@@ -43,7 +43,11 @@ impl Deploy {
         // Fetch the contract creation metadata from Etherscan
         let contract_creation_metadata = self.fetch_contract_creation_metadata().await?;
 
+        // Fetch the constructor arguments from Etherscan
+        let constructor_arguments = self.fetch_constructor_arguments().await?;
+
         println!("Init bytecode: {:?}", init_bytecode);
+        println!("Constructor arguments: {:?}", constructor_arguments);
         println!(
             "Contract creation metadata: {:?}",
             contract_creation_metadata
@@ -95,6 +99,34 @@ impl Deploy {
         // Return the result
         let result = response.result.first().unwrap();
         Ok(result.clone())
+    }
+
+    async fn fetch_constructor_arguments(&self) -> Result<String, DeployError> {
+        // Fetch the contract creation metadata from Etherscan
+        let etherscan = crate::resources::etherscan::Etherscan::new(String::from(env!(
+            "ETHERSCAN_API_KEY",
+            "Please set an ETHERSCAN_API_KEY"
+        )));
+        let response = etherscan
+            .get_source_code(&self.address)
+            .await
+            .map_err(DeployError::EtherscanAPIError)?;
+
+        // Check that the response is valid
+        if response.status != "1" {
+            return Err(DeployError::DefaultError(response.message));
+        }
+
+        // Check that the response contains exactly one result
+        if response.result.len() != 1 {
+            return Err(DeployError::DefaultError(
+                "Expected exactly one result".to_owned(),
+            ));
+        }
+
+        // Return the result
+        let result = response.result.first().unwrap();
+        Ok(result.constructor_arguments.clone())
     }
 }
 
