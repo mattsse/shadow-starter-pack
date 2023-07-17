@@ -1,7 +1,10 @@
 [profile.default]
-src = "src"
-out = "out"
-libs = ["lib"]
+src = "contracts/src"
+test = "contracts/test"
+out = "contracts/out"
+libs = ["contracts/lib"]
+cache_path = "contracts/cache"
+fs_permissions = [{ access = "read", path = "./contracts/out"}]
 evm_version = "shanghai"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
