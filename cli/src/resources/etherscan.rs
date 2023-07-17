@@ -15,7 +15,7 @@ pub struct GetContractCreationResponse {
 }
 
 /// Represents a single result in the Etherscan API for the contract creation endpoint
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ContractCreationResult {
     pub contract_address: String,
@@ -51,9 +51,10 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn can_get_contract_creation() {
-        let etherscan = Etherscan {
-            api_key: String::from(env!("ETHERSCAN_API_KEY", "Please set an ETHERSCAN_API_KEY")),
-        };
+        let etherscan = Etherscan::new(String::from(env!(
+            "ETHERSCAN_API_KEY",
+            "Please set an ETHERSCAN_API_KEY"
+        )));
         let response = etherscan
             .get_contract_creation(&String::from("0x7a250d5630b4cf539739df2c5dacb4c659f2488d"))
             .await

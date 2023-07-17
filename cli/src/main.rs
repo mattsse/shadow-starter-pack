@@ -1,6 +1,9 @@
 mod cmd;
 mod resources;
+use std::fmt;
+
 use clap::{Parser, Subcommand};
+use thiserror::Error;
 
 #[derive(Parser)]
 #[command(author, version)]
@@ -25,13 +28,36 @@ enum Commands {
     Deploy(cmd::deploy::Deploy),
 }
 
-fn main() {
+/// Represents an error that can occur while running the CLI tool
+#[derive(Error, Debug)]
+enum CliError {
+    /// Error related to the deploy command
+    DeployError(cmd::deploy::DeployError),
+    /// Error that should never occur
+    Never,
+}
+
+impl fmt::Display for CliError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            CliError::DeployError(err) => write!(f, "Deploy error: {}", err),
+            CliError::Never => write!(
+                f,
+                "This error should never occur, please file a bug report with help@tryshadow.xyz."
+            ),
+        }
+    }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), CliError> {
     let cli = Cli::parse();
 
     match &cli.command {
         Some(Commands::Deploy(deploy)) => {
-            deploy.run();
+            deploy.run().await.map_err(CliError::DeployError)?;
+            Ok(())
         }
-        None => {}
+        None => Err(CliError::Never),
     }
 }
