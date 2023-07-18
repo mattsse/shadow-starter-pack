@@ -6,8 +6,8 @@ pub trait ArtifactsResource {
     /// Get the artifact for a given contract
     fn get_artifact(
         &self,
-        file_name: &String,
-        contract_name: &String,
+        file_name: &str,
+        contract_name: &str,
     ) -> Result<alloy_json_abi::ContractObject, Box<dyn std::error::Error>>;
 }
 
@@ -25,8 +25,8 @@ impl Artifacts {
 impl ArtifactsResource for Artifacts {
     fn get_artifact(
         &self,
-        file_name: &String,
-        contract_name: &String,
+        file_name: &str,
+        contract_name: &str,
     ) -> Result<alloy_json_abi::ContractObject, Box<dyn std::error::Error>> {
         let file_path = format!("{}/{}/{}.json", self.path, file_name, contract_name);
         let contents = fs::read_to_string(file_path)?;
@@ -50,6 +50,6 @@ mod tests {
                 &"UniswapV2Router02".to_string(),
             )
             .unwrap();
-        assert_eq!(hex::encode(artifact.bytecode.unwrap().to_vec()), expected);
+        assert_eq!(hex::encode(&artifact.bytecode.unwrap()), expected);
     }
 }

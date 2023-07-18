@@ -8,13 +8,13 @@ pub trait EtherscanResource {
     /// Fetch the contract creation metadata from Etherscan
     async fn get_contract_creation(
         &self,
-        address: &String,
+        address: &str,
     ) -> Result<GetContractCreationResponse, reqwest::Error>;
 
     /// Fetch the source code from Etherscan
     async fn get_source_code(
         &self,
-        contract_address: &String,
+        contract_address: &str,
     ) -> Result<GetSourceCodeResponse, reqwest::Error>;
 }
 
@@ -72,7 +72,7 @@ impl EtherscanResource for Etherscan {
     /// https://docs.etherscan.io/api-endpoints/contracts#get-contract-creator-and-creation-tx-hash
     async fn get_contract_creation(
         &self,
-        address: &String,
+        address: &str,
     ) -> Result<GetContractCreationResponse, reqwest::Error> {
         let url = format!(
             "https://api.etherscan.io/api?module=contract&action=getcontractcreation&contractaddresses={}&apikey={}",
@@ -88,7 +88,7 @@ impl EtherscanResource for Etherscan {
     /// https://docs.etherscan.io/api-endpoints/contracts#get-contract-source-code-for-verified-contract-source-codes
     async fn get_source_code(
         &self,
-        address: &String,
+        address: &str,
     ) -> Result<GetSourceCodeResponse, reqwest::Error> {
         let url = format!(
             "https://api.etherscan.io/api?module=contract&action=getsourcecode&address={}&apikey={}",
