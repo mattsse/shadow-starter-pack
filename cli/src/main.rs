@@ -29,6 +29,8 @@ struct Cli {
 enum Commands {
     /// Deploy a shadow contract
     Deploy(cmd::deploy::Deploy),
+    /// Start a local shadow fork
+    Fork(cmd::fork::Fork),
 }
 
 /// Represents an error that can occur while running the CLI tool
@@ -36,6 +38,8 @@ enum Commands {
 enum CliError {
     /// Error related to the deploy command
     DeployError(cmd::deploy::DeployError),
+    /// Error related to the fork command
+    ForkError(cmd::fork::ForkError),
     /// Error that should never occur
     Never,
 }
@@ -44,6 +48,7 @@ impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             CliError::DeployError(err) => write!(f, "Deploy error: {}", err),
+            CliError::ForkError(err) => write!(f, "Fork error: {}", err),
             CliError::Never => write!(
                 f,
                 "This error should never occur, please file a bug report with help@tryshadow.xyz."
@@ -59,6 +64,10 @@ async fn main() -> Result<(), CliError> {
     match &cli.command {
         Some(Commands::Deploy(deploy)) => {
             deploy.run().await.map_err(CliError::DeployError)?;
+            Ok(())
+        }
+        Some(Commands::Fork(fork)) => {
+            fork.run().await.map_err(CliError::ForkError)?;
             Ok(())
         }
         None => Err(CliError::Never),
