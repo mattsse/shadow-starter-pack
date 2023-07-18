@@ -1,0 +1,14 @@
+[
+  {
+    "fileName": "UniswapV2Router02.sol",
+    "contractName": "UniswapV2Router02",
+    "address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+    "runtimeBytecode": "UniswapV2Router02_dummyruntimebytecode"
+  },
+  {
+    "fileName": "UniversalRouter.sol",
+    "contractName": "UniversalRouter",
+    "address": "0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b",
+    "runtimeBytecode": "UniversalRouter_dummyruntimebytecode"
+  }
+]
