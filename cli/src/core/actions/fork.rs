@@ -15,6 +15,24 @@ use std::{collections::HashMap, str::FromStr, sync::Arc};
 use thiserror::Error;
 
 use crate::core::resources::shadow::{ShadowContract, ShadowResource};
+
+/// Starts a local shadow fork using Anvil.
+///
+/// This action is used by the `fork` command.
+///
+/// To reduce latency, and to save on RPC compute units,
+/// this local shadow fork will NOT replay all transactions
+/// from mainnet. It will only replay the transactions that
+/// were sent to shadowed contracts.
+///
+/// This means that the local shadow fork state will not be
+/// identical to mainnet, but it will be close enough for
+/// demonstration purposes.
+///
+/// We're using Anvil's EVM for this local shadow fork, which
+/// does not have gas limit bypassing enabled. This means that
+/// the gas used by the shadow contracts will be different from
+/// the gas used on mainnet.
 pub struct Fork<P: JsonRpcClient + 'static> {
     /// The Ethereum provider
     pub provider: Arc<Provider<P>>,
