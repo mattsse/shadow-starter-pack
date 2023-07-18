@@ -12,7 +12,7 @@ use ethers::{prelude::Provider, providers::Middleware};
 use ethers::{providers::JsonRpcClient, types::Transaction};
 use thiserror::Error;
 
-use crate::resources::{
+use crate::core::resources::{
     artifacts::ArtifactsResource,
     etherscan::{ContractCreationResult, EtherscanResource},
 };
@@ -334,13 +334,11 @@ mod tests {
     use ethers::{providers::MockProvider, types::Transaction};
 
     use crate::{
-        resources::{
-            artifacts::Artifacts,
-            etherscan::{
-                ContractCreationResult, EtherscanResource, GetContractCreationResponse,
-                GetSourceCodeResponse, SourceCodeResult,
-            },
+        core::resources::etherscan::{
+            ContractCreationResult, EtherscanResource, GetContractCreationResponse,
+            GetSourceCodeResponse, SourceCodeResult,
         },
+        resources::artifacts::LocalArtifactStore,
         test_fixture,
     };
 
@@ -389,7 +387,7 @@ mod tests {
             ..Default::default()
         })
         .unwrap();
-        let artifacts = Artifacts::new(test_fixture!("resources", ""));
+        let artifacts = LocalArtifactStore::new(test_fixture!("resources", ""));
         let etherscan = MockEtherscanResource {};
 
         let deploy = super::Deploy::new(
