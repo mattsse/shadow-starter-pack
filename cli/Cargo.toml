@@ -10,6 +10,7 @@ alloy-json-abi = { git = "https://github.com/alloy-rs/core", package = "alloy-js
 alloy-primitives = { git = "https://github.com/alloy-rs/core", package = "alloy-primitives" }
 anvil = { git = "https://github.com/foundry-rs/foundry", package = "anvil", rev = "684d394db587bef427475a660c72013e97ef71d2", features = ["cmd"] }
 anvil-core = { git = "https://github.com/foundry-rs/foundry", package = "anvil-core", rev = "684d394db587bef427475a660c72013e97ef71d2" }
+async-trait = "0.1.71"
 clap = { version = "4.3.12", features = ["derive"] }
 ethers = "2.0"
 hex = "0.4.3"

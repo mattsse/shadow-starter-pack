@@ -1,6 +1,24 @@
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
-/// Represents the resource for the Etherscan API client
+/// Defines the interface for interacting with Etherscan.
+/// The Etherscan resource is responsible for fetching data from Etherscan.
+#[async_trait]
+pub trait EtherscanResource {
+    /// Fetch the contract creation metadata from Etherscan
+    async fn get_contract_creation(
+        &self,
+        address: &String,
+    ) -> Result<GetContractCreationResponse, reqwest::Error>;
+
+    /// Fetch the source code from Etherscan
+    async fn get_source_code(
+        &self,
+        contract_address: &String,
+    ) -> Result<GetSourceCodeResponse, reqwest::Error>;
+}
+
+/// The implementation of the Etherscan resource.
 pub struct Etherscan {
     api_key: String,
 }
@@ -47,9 +65,12 @@ impl Etherscan {
     pub fn new(api_key: String) -> Self {
         Etherscan { api_key }
     }
+}
 
+#[async_trait]
+impl EtherscanResource for Etherscan {
     /// https://docs.etherscan.io/api-endpoints/contracts#get-contract-creator-and-creation-tx-hash
-    pub async fn get_contract_creation(
+    async fn get_contract_creation(
         &self,
         address: &String,
     ) -> Result<GetContractCreationResponse, reqwest::Error> {
@@ -65,7 +86,7 @@ impl Etherscan {
     }
 
     /// https://docs.etherscan.io/api-endpoints/contracts#get-contract-source-code-for-verified-contract-source-codes
-    pub async fn get_source_code(
+    async fn get_source_code(
         &self,
         address: &String,
     ) -> Result<GetSourceCodeResponse, reqwest::Error> {
@@ -84,6 +105,7 @@ impl Etherscan {
 #[cfg(test)]
 mod tests {
     use super::Etherscan;
+    use crate::resources::etherscan::EtherscanResource;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn can_get_contract_creation() {

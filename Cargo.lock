@@ -4161,6 +4161,7 @@ dependencies = [
  "alloy-primitives",
  "anvil",
  "anvil-core",
+ "async-trait",
  "clap",
  "ethers",
  "hex",
