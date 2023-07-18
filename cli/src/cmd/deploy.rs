@@ -1,7 +1,9 @@
 use clap::Args;
 
 pub use crate::core::actions::deploy::DeployError;
-use crate::resources::{artifacts::LocalArtifactStore, etherscan::Etherscan};
+use crate::resources::{
+    artifacts::LocalArtifactStore, etherscan::Etherscan, shadow::LocalShadowStore,
+};
 use ethers::providers::{Http, Provider};
 
 #[derive(Args)]
@@ -25,12 +27,14 @@ impl Deploy {
         // Build the provider
         let provider =
             Provider::<Http>::try_from(&eth_rpc_url).expect("Please set a valid ETH_RPC_URL");
+
         // Build the resources
         let artifacts_resource = LocalArtifactStore::new("contracts/out".to_owned());
         let etherscan_resource = Etherscan::new(String::from(env!(
             "ETHERSCAN_API_KEY",
             "Please set an ETHERSCAN_API_KEY"
         )));
+        let shadow_resource = LocalShadowStore::new("".to_owned());
 
         let deploy = crate::core::actions::deploy::Deploy::new(
             file_name,
@@ -39,6 +43,7 @@ impl Deploy {
             provider,
             artifacts_resource,
             etherscan_resource,
+            shadow_resource,
             eth_rpc_url,
         );
 
