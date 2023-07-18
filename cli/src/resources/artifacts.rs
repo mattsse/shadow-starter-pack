@@ -40,8 +40,8 @@ mod tests {
         let artifacts = LocalArtifactStore::new(file_path);
         let artifact = artifacts
             .get_artifact(
-                &"UniswapV2Router02.sol".to_string(),
-                &"UniswapV2Router02".to_string(),
+                "UniswapV2Router02.sol",
+                "UniswapV2Router02",
             )
             .unwrap();
         assert_eq!(hex::encode(&artifact.bytecode.unwrap()), expected);
