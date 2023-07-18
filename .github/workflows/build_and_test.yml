@@ -30,6 +30,10 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: check
+        env:
+          ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
+          WS_RPC_URL: ${{ secrets.WS_RPC_URL }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
 
   test:
     name: Test Suite
@@ -53,6 +57,11 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+        env:
+          ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
+          WS_RPC_URL: ${{ secrets.WS_RPC_URL }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+
 
   lints:
     name: Lints
@@ -84,3 +93,7 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+        env:
+          ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
+          WS_RPC_URL: ${{ secrets.WS_RPC_URL }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
