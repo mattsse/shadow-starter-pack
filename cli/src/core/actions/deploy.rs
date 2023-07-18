@@ -324,6 +324,7 @@ fn anvil_args(eth_rpc_url: &str, block_number: &str) -> NodeArgs {
         "--gas-price",
         "0",
         "--no-mining",
+        "--silent",
         "--disable-gas-limit",
         "--hardfork",
         "latest",
