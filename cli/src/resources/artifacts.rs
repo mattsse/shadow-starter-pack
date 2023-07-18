@@ -37,7 +37,6 @@ impl ArtifactsResource for Artifacts {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::test_fixture;
 
     #[test]
     fn test_get_artifact() {

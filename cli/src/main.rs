@@ -1,4 +1,7 @@
 mod cmd;
+mod core;
+#[macro_use]
+mod macros;
 mod resources;
 use std::fmt;
 

@@ -9,5 +9,3 @@ macro_rules! test_fixture {
         )
     };
 }
-
-pub(crate) use test_fixture;
