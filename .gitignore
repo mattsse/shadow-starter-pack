@@ -18,3 +18,9 @@ node_modules/
 
 # Cargo
 target/
+
+# Shadow
+shadow.json
+
+# VSCode
+.vscode/

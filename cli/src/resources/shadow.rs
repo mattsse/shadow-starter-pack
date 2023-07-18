@@ -1,6 +1,7 @@
-use std::fs;
-
 use async_trait::async_trait;
+use std::fs::File;
+use std::fs::{self, OpenOptions};
+use std::io::Write;
 
 use crate::core::resources::shadow::{ShadowContract, ShadowResource};
 
@@ -19,6 +20,16 @@ impl LocalShadowStore {
 
     fn read_from_file(&self) -> Result<Vec<ShadowContract>, Box<dyn std::error::Error>> {
         let file_path = format!("{}/shadow.json", self.path);
+
+        // Create the shadow file if it doesn't exist
+        if let Ok(mut file) = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(file_path.clone())
+        {
+            file.write_all("[]".as_bytes())?;
+        }
+
         let contents = fs::read_to_string(file_path)?;
         let contracts: Vec<ShadowContract> = serde_json::from_str(&contents)?;
         Ok(contracts)
@@ -28,9 +39,10 @@ impl LocalShadowStore {
         &self,
         contracts: Vec<ShadowContract>,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let file_path = format!("{}/shadow.json", self.path);
+        let file_path: String = format!("{}/shadow.json", self.path);
         let contents = serde_json::to_string(&contracts)?;
-        fs::write(file_path, contents)?;
+        let mut file = File::create(file_path)?;
+        file.write_all(contents.as_bytes())?;
         Ok(())
     }
 }

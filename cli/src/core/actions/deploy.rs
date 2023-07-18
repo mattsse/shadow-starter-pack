@@ -26,28 +26,28 @@ const DEPLOY_TX_GAS: i64 = 10000000;
 /// This action is used by the `deploy` command.
 pub struct Deploy<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcClient> {
     /// The name of the artifact file to use
-    file_name: String,
+    pub file_name: String,
 
     /// The name of the contract to deploy
-    contract_name: String,
+    pub contract_name: String,
 
     /// The address of the shadow contract to deploy
-    address: String,
+    pub address: String,
 
     /// The Ethereum provider
-    provider: Provider<P>,
+    pub provider: Provider<P>,
 
     /// The Artifacts resource
-    artifacts_resource: A,
+    pub artifacts_resource: A,
 
     /// The Etherscan resource
-    etherscan_resource: E,
+    pub etherscan_resource: E,
 
     /// The Shadow resource
-    shadow_resource: S,
+    pub shadow_resource: S,
 
     /// The RPC URL to use for the anvil fork
-    eth_rpc_url: String,
+    pub eth_rpc_url: String,
 }
 
 #[allow(clippy::enum_variant_names)]
@@ -73,28 +73,6 @@ pub enum DeployError {
 impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcClient>
     Deploy<E, A, S, P>
 {
-    pub fn new(
-        file_name: String,
-        contract_name: String,
-        address: String,
-        provider: Provider<P>,
-        artifacts_resource: A,
-        etherscan_resource: E,
-        shadow_resource: S,
-        eth_rpc_url: String,
-    ) -> Self {
-        Deploy {
-            file_name,
-            contract_name,
-            address,
-            provider,
-            artifacts_resource,
-            etherscan_resource,
-            shadow_resource,
-            eth_rpc_url,
-        }
-    }
-
     pub async fn run(&self) -> Result<(), DeployError> {
         // Get the artifact bytecode
         let artifact_bytecode = self.get_artifact_bytecode()?;
@@ -423,20 +401,20 @@ mod tests {
             ..Default::default()
         })
         .unwrap();
-        let artifacts = LocalArtifactStore::new(test_fixture!("resources", ""));
-        let etherscan = MockEtherscanResource {};
-        let shadow = LocalShadowStore::new(temp_dir.path().to_str().unwrap().to_string());
+        let artifacts_resource = LocalArtifactStore::new(test_fixture!("resources", ""));
+        let etherscan_resource = MockEtherscanResource {};
+        let shadow_resource = LocalShadowStore::new(temp_dir.path().to_str().unwrap().to_string());
 
-        let deploy = super::Deploy::new(
+        let deploy = super::Deploy {
             file_name,
             contract_name,
             address,
             provider,
-            artifacts,
-            etherscan,
-            shadow,
-            env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned(),
-        );
+            artifacts_resource,
+            etherscan_resource,
+            shadow_resource,
+            eth_rpc_url: env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned(),
+        };
         deploy.run().await.unwrap();
 
         // Check that the shadow.json file has been updated

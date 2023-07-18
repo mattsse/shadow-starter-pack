@@ -1,3 +1,5 @@
+use std::env;
+
 use clap::Args;
 
 pub use crate::core::actions::deploy::DeployError;
@@ -34,20 +36,27 @@ impl Deploy {
             "ETHERSCAN_API_KEY",
             "Please set an ETHERSCAN_API_KEY"
         )));
-        let shadow_resource = LocalShadowStore::new("".to_owned());
+        let shadow_resource = LocalShadowStore::new(
+            env::current_dir()
+                .unwrap()
+                .as_path()
+                .to_str()
+                .unwrap()
+                .to_owned(),
+        );
 
-        let deploy = crate::core::actions::deploy::Deploy::new(
+        let deploy = crate::core::actions::deploy::Deploy {
             file_name,
             contract_name,
-            self.address.clone(),
+            address: self.address.clone(),
             provider,
             artifacts_resource,
             etherscan_resource,
             shadow_resource,
             eth_rpc_url,
-        );
+        };
 
-        let _ = deploy.run().await?;
+        deploy.run().await?;
 
         Ok(())
     }
