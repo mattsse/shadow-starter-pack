@@ -47,7 +47,7 @@ pub struct Deploy<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource,
     pub shadow_resource: S,
 
     /// The RPC URL to use for the anvil fork
-    pub eth_rpc_url: String,
+    pub http_rpc_url: String,
 }
 
 #[allow(clippy::enum_variant_names)]
@@ -224,7 +224,7 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
         block_number: Option<U64>,
     ) -> Result<(EthApi, NodeHandle), DeployError> {
         let anvil_args = anvil_args(
-            self.eth_rpc_url.as_str(),
+            self.http_rpc_url.as_str(),
             block_number
                 .map(|n| (n.saturating_sub(Uint::from(1))).to_string())
                 .unwrap_or_else(|| "latest".to_owned())
@@ -310,11 +310,11 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
     }
 }
 
-fn anvil_args(eth_rpc_url: &str, block_number: &str) -> NodeArgs {
+fn anvil_args(http_rpc_url: &str, block_number: &str) -> NodeArgs {
     NodeArgs::parse_from([
         "anvil",
         "--fork-url",
-        eth_rpc_url,
+        http_rpc_url,
         "--fork-block-number",
         block_number,
         "--code-size-limit",
@@ -414,7 +414,7 @@ mod tests {
             artifacts_resource,
             etherscan_resource,
             shadow_resource,
-            eth_rpc_url: env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned(),
+            http_rpc_url: env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned(),
         };
         deploy.run().await.unwrap();
 
