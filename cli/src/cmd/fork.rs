@@ -11,7 +11,7 @@ pub struct Fork {}
 
 impl Fork {
     pub async fn run(&self) -> Result<(), ForkError> {
-        let eth_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
+        let http_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
 
         // Build the provider
         let provider =
@@ -31,7 +31,7 @@ impl Fork {
 
         // Build the action
         let fork =
-            crate::core::actions::fork::Fork::new(provider, shadow_resource, eth_rpc_url).await?;
+            crate::core::actions::fork::Fork::new(provider, shadow_resource, http_rpc_url).await?;
 
         // Run the action
         fork.run().await?;

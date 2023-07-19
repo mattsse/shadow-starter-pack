@@ -39,8 +39,8 @@ pub struct Fork<P: JsonRpcClient + 'static> {
 
     pub shadow_contracts: Vec<ShadowContract>,
 
-    /// The RPC URL to use for the anvil fork
-    pub eth_rpc_url: String,
+    /// The HTTP RPC URL to use for the anvil fork
+    pub http_rpc_url: String,
 }
 
 #[allow(clippy::enum_variant_names)]
@@ -61,7 +61,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
     pub async fn new<S: ShadowResource>(
         provider: Provider<P>,
         shadow_resource: S,
-        eth_rpc_url: String,
+        http_rpc_url: String,
     ) -> Result<Self, ForkError> {
         let provider = Arc::new(provider);
         let shadow_contracts = shadow_resource
@@ -72,7 +72,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         Ok(Self {
             provider,
             shadow_contracts,
-            eth_rpc_url,
+            http_rpc_url,
         })
     }
 
@@ -94,7 +94,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
 
     /// Starts an anvil fork, which is used to deploy the shadow contract.
     async fn start_anvil(&self) -> Result<(EthApi, NodeHandle), ForkError> {
-        let anvil_args = anvil_args(self.eth_rpc_url.as_str());
+        let anvil_args = anvil_args(self.http_rpc_url.as_str());
         let (api, node_handle) = anvil::spawn(anvil_args.into_node_config()).await;
         Ok((api, node_handle))
     }
@@ -238,11 +238,11 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
     }
 }
 
-fn anvil_args(eth_rpc_url: &str) -> NodeArgs {
+fn anvil_args(http_rpc_url: &str) -> NodeArgs {
     NodeArgs::parse_from([
         "anvil",
         "--fork-url",
-        eth_rpc_url,
+        http_rpc_url,
         "--code-size-limit",
         usize::MAX.to_string().as_str(),
         "--base-fee",

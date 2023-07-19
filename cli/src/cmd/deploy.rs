@@ -21,14 +21,14 @@ pub struct Deploy {
 
 impl Deploy {
     pub async fn run(&self) -> Result<(), DeployError> {
-        let eth_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
+        let http_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
 
         // Parse the contract string
         let (file_name, contract_name) = parse_contract_string(&self.contract);
 
         // Build the provider
         let provider =
-            Provider::<Http>::try_from(&eth_rpc_url).expect("Please set a valid ETH_RPC_URL");
+            Provider::<Http>::try_from(&http_rpc_url).expect("Please set a valid ETH_RPC_URL");
 
         // Build the resources
         let artifacts_resource = LocalArtifactStore::new("contracts/out".to_owned());
@@ -53,7 +53,7 @@ impl Deploy {
             artifacts_resource,
             etherscan_resource,
             shadow_resource,
-            eth_rpc_url,
+            http_rpc_url,
         };
 
         deploy.run().await?;
