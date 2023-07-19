@@ -25,6 +25,7 @@ locally, and deploy a shadow contract to your hosted shadow fork.
 if you still need to get set up with an account)
 
 # Setup
+**Est time: 5 mins**
 1. Clone this repository
 ```
 $ git clone git@github.com:shadow-hq/hackathon.git
@@ -38,8 +39,7 @@ SHADOW_PROJECT_ID=<your_project_id>
 ```
 
 # Tutorial
-*Note: Make sure you have completed the Setup above
-before going through this section.*
+**Est time: 10 mins**
 
 This tutorial will walk you through the steps to create,
 test, and deploy your first shadow contract -- the Uniswap V2
@@ -68,6 +68,9 @@ emitted when a swap transaction occurs on the contract (in
 `contracts/test`).
 
 ## Steps
+*Note: Make sure you have completed the [setup](#setup) above
+before going through this section.*
+
 *Note: All commands should be run from the root of the project repo, unless
 stated otherwise.*
 
