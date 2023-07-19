@@ -421,7 +421,7 @@ mod tests {
         // Check that the shadow.json file has been updated
         let shadow = LocalShadowStore::new(temp_dir.path().to_str().unwrap().to_string());
         let contract = shadow
-            .get("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
+            .get_by_address("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
             .await
             .unwrap();
         assert_eq!(

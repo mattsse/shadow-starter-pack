@@ -49,11 +49,29 @@ impl LocalShadowStore {
 
 #[async_trait]
 impl ShadowResource for LocalShadowStore {
-    async fn get(&self, address: &str) -> Result<ShadowContract, Box<dyn std::error::Error>> {
+    async fn get_by_address(
+        &self,
+        address: &str,
+    ) -> Result<ShadowContract, Box<dyn std::error::Error>> {
         let contracts = self.read_from_file()?;
         let contract = contracts
             .iter()
             .find(|contract| contract.address == address)
+            .ok_or("Contract not found")?;
+        Ok(contract.clone())
+    }
+
+    async fn get_by_name(
+        &self,
+        file_name: &str,
+        contract_name: &str,
+    ) -> Result<ShadowContract, Box<dyn std::error::Error>> {
+        let contracts = self.read_from_file()?;
+        let contract = contracts
+            .iter()
+            .find(|contract| {
+                contract.file_name == file_name && contract.contract_name == contract_name
+            })
             .ok_or("Contract not found")?;
         Ok(contract.clone())
     }
@@ -108,12 +126,12 @@ mod tests {
     use tempfile::tempdir;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn can_get() {
+    async fn can_get_by_address() {
         let path = test_fixture!("resources", "");
         let shadow_store = super::LocalShadowStore::new(path);
 
         let contract = shadow_store
-            .get("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
+            .get_by_address("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
             .await
             .unwrap();
         assert_eq!(contract.file_name, "UniswapV2Router02.sol");
@@ -128,7 +146,43 @@ mod tests {
         );
 
         let contract = shadow_store
-            .get("0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b")
+            .get_by_address("0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b")
+            .await
+            .unwrap();
+        assert_eq!(contract.file_name, "UniversalRouter.sol");
+        assert_eq!(contract.contract_name, "UniversalRouter");
+        assert_eq!(
+            contract.address,
+            "0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b"
+        );
+        assert_eq!(
+            contract.runtime_bytecode,
+            "UniversalRouter_dummyruntimebytecode"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn can_get_by_name() {
+        let path = test_fixture!("resources", "");
+        let shadow_store = super::LocalShadowStore::new(path);
+
+        let contract = shadow_store
+            .get_by_name("UniswapV2Router02.sol", "UniswapV2Router02")
+            .await
+            .unwrap();
+        assert_eq!(contract.file_name, "UniswapV2Router02.sol");
+        assert_eq!(contract.contract_name, "UniswapV2Router02");
+        assert_eq!(
+            contract.address,
+            "0x7a250d5630b4cf539739df2c5dacb4c659f2488d"
+        );
+        assert_eq!(
+            contract.runtime_bytecode,
+            "UniswapV2Router02_dummyruntimebytecode"
+        );
+
+        let contract = shadow_store
+            .get_by_name("UniversalRouter.sol", "UniversalRouter")
             .await
             .unwrap();
         assert_eq!(contract.file_name, "UniversalRouter.sol");
@@ -205,7 +259,7 @@ mod tests {
         let contracts = shadow_store.list().await.unwrap();
         assert_eq!(contracts.len(), 2);
         let contract = shadow_store
-            .get("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
+            .get_by_address("0x7a250d5630b4cf539739df2c5dacb4c659f2488d")
             .await
             .unwrap();
         assert_eq!(contract.file_name, "UniswapV2Router02.sol");
