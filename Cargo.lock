@@ -70,9 +70,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloy-dyn-abi"
+version = "0.2.0"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
+dependencies = [
+ "alloy-json-abi",
+ "alloy-primitives",
+ "alloy-sol-type-parser",
+ "alloy-sol-types",
+ "const-hex",
+ "derive_more",
+ "itoa",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "alloy-json-abi"
 version = "0.2.0"
-source = "git+https://github.com/alloy-rs/core#f14548400a95605fa6116379effc12a0cc36c686"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-type-parser",
@@ -82,7 +98,7 @@ dependencies = [
 [[package]]
 name = "alloy-primitives"
 version = "0.2.0"
-source = "git+https://github.com/alloy-rs/core#f14548400a95605fa6116379effc12a0cc36c686"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
 dependencies = [
  "alloy-rlp",
  "bytes",
@@ -109,9 +125,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloy-sol-macro"
+version = "0.2.0"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
+dependencies = [
+ "dunce",
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.26",
+ "syn-solidity",
+ "tiny-keccak",
+]
+
+[[package]]
 name = "alloy-sol-type-parser"
 version = "0.2.0"
-source = "git+https://github.com/alloy-rs/core#f14548400a95605fa6116379effc12a0cc36c686"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
+
+[[package]]
+name = "alloy-sol-types"
+version = "0.2.0"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-macro",
+ "const-hex",
+ "serde",
+]
 
 [[package]]
 name = "android-tzdata"
@@ -4157,12 +4198,14 @@ dependencies = [
 name = "shadow"
 version = "0.1.0"
 dependencies = [
+ "alloy-dyn-abi",
  "alloy-json-abi",
  "alloy-primitives",
  "anvil",
  "anvil-core",
  "async-trait",
  "clap",
+ "ethabi",
  "ethers",
  "hex",
  "reqwest",
@@ -4171,6 +4214,7 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tokio",
+ "yansi 0.5.1",
 ]
 
 [[package]]
@@ -4430,6 +4474,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "syn-solidity"
+version = "0.2.0"
+source = "git+https://github.com/alloy-rs/core#ed1fdbc3862132ff58a10434ae6032c219abffdc"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.26",
 ]
 
 [[package]]
