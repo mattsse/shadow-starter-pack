@@ -184,3 +184,24 @@ Now that we've tested our shadow contract locally, we're going to
 deploy the contract onto a hosted shadow fork.
 
 TODO
+
+# FAQs
+### Why am I seeing failed transactions on my local shadow fork?
+This is expected. To reduce the CU cost of running a shadow
+fork, and to keep latency to a minimum, we only run a subset
+of the mainnet transactions on the local shadow fork. This
+means that some transactions will fail on the shadow fork
+because your local shadow fork does not have the exact same
+state as mainnet.
+
+Your hosted shadow fork *will* have the exact same state as
+mainnet. Your hosted shadow node runs like a standard node,
+and is latency optimized.
+
+### How do I shadow a proxy contract?
+To shadow a proxy contract, you need to shadow the proxy
+implementation contract.
+
+### How do I shadow a factory contract?
+This is not supported locally. You can shadow a factory
+contract on your hosted shadow fork.
