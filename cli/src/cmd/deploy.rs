@@ -19,6 +19,11 @@ pub struct Deploy {
     pub address: String,
 }
 
+/// Deploys a shadow contract to a local fork.
+///
+/// The command uses the [`crate::core::actions::Deploy`] action
+/// under the hood, using the local file-based artifact store,
+/// and the local file-based shadow store.
 impl Deploy {
     pub async fn run(&self) -> Result<(), DeployError> {
         let http_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
@@ -45,7 +50,7 @@ impl Deploy {
                 .to_owned(),
         );
 
-        let deploy = crate::core::actions::deploy::Deploy {
+        let deploy = crate::core::actions::Deploy {
             file_name,
             contract_name,
             address: self.address.clone(),

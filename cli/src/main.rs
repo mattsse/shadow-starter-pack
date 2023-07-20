@@ -1,5 +1,6 @@
 mod cmd;
 mod core;
+mod decode;
 #[macro_use]
 mod macros;
 mod resources;
