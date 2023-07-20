@@ -121,7 +121,7 @@ Test result: ok. 1 passed; 0 failed; 0 skipped; finished in 933.97ms
 Ran 1 test suites: 1 tests passed, 0 failed, 0 skipped (1 total tests)
 ```
 
-### 3. Run a local shadow fork
+### 3. Verify on a local shadow fork
 Now that we've tested our shadow contract, we're going to deploy
 the contract onto a locally running shadow fork.
 
@@ -135,22 +135,10 @@ Then start the local shadow fork:
 shadow fork
 ```
 
-After a few seconds, you should see logs that look like this, which
+After a few seconds, you should see stdout logs that look like this, which
 show that the shadow fork is receiving mainnet transactions.
 
 ```bash
-    Transaction: 0x808611d79770cdf60cc40b88f7e89392baa0437ff410f05b34342a3950804e74
-    Gas used: 157618
-
-    Transaction: 0xd1b6867acf8d30b5de47579f8466821d8d5e1f0195c1269c0d2b2bb0444a0d2b
-    Gas used: 180083
-
-    Transaction: 0xd051b9ec828d500c0fbbb49a17bf810fd56089f9dc1ae860adc720e4764bbc27
-    Gas used: 162034
-
-    Transaction: 0x2f8a1ede7cc8e99e59101f1dc4cd81b60e1c2dc7facd3e89e0486a8e9c0eabfb
-    Gas used: 152165
-
     Transaction: 0xd23994e04d0f3fef2c900933552dda459c913849875d159521d214c72ee4774c
     Gas used: 155304
 
@@ -161,3 +149,59 @@ show that the shadow fork is receiving mainnet transactions.
     Block Hash: 0x3956ecce5f133b53aedc34a46ffc028917b39b3277bd1f424ecf654b57908929
     Block Time: "Wed, 19 Jul 2023 00:35:47 +0000"
 ```
+
+Then, in a separate terminal window, run the following command to view a stream of
+`Trade` events that are happening live on mainnet:
+```batch
+shadow events UniswapV2Router02.sol:UniswapV2Router02 Trade
+```
+
+You should start seeing output that looks like this:
+```bash
+=> Transaction: 0x67caf8bbb2192b3621cefb5b7a5f471e1a309317176d07a3b912b8c326c4a21b
+{
+  "platformName": "uniswap-v2",
+  "contractAddress": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+  "tokenInAddress": "0x5543862ba50b6bbc198222a34d30e93a62adce24",
+  "tokenOutAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "amountIn": "1867527285719645",
+  "amountOut": "758754486244361865",
+  "senderAddress": "0x936e176e0e362d89e5b8b59fc96f61f77a7afa7a"
+}
+=> Transaction: 0xf51cf30855bf92ce01e57e9d7e65087c401b71cbc88420fda5e1731c03c698f9
+{
+  "platformName": "uniswap-v2",
+  "contractAddress": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+  "tokenInAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "tokenOutAddress": "0x03a053a158e115dcc1f4de56cbf2ce42ed88f1ca",
+  "amountIn": "150000000000000000",
+  "amountOut": "2235380042723567",
+  "senderAddress": "0xe09b0e8b5370528ab4f84c278b229c670ad91f4f"
+}
+```
+### 4. Deploy the shadow contract to your hosted shadow fork
+Now that we've tested our shadow contract locally, we're going to
+deploy the contract onto a hosted shadow fork.
+
+TODO
+
+# FAQs
+### Why am I seeing failed transactions on my local shadow fork?
+This is expected. To reduce the CU cost of running a shadow
+fork, and to keep latency to a minimum, we only run a subset
+of the mainnet transactions on the local shadow fork. This
+means that some transactions will fail on the shadow fork
+because your local shadow fork does not have the exact same
+state as mainnet.
+
+Your hosted shadow fork *will* have the exact same state as
+mainnet. Your hosted shadow node runs like a standard node,
+and is latency optimized.
+
+### How do I shadow a proxy contract?
+To shadow a proxy contract, you need to shadow the proxy
+implementation contract.
+
+### How do I shadow a factory contract?
+This is not supported locally. You can shadow a factory
+contract on your hosted shadow fork.
