@@ -27,10 +27,15 @@ if you still need to get set up with an account)
 # Setup
 **Est time: 5 mins**
 1. Clone this repository
-```
+```bash
 $ git clone git@github.com:shadow-hq/hackathon.git
 ```
-2. Set environment variables
+2. Install the `shadow` CLI tool
+```bash
+# In the root of the project repo
+$ cargo install --path cli
+```
+3. Set environment variables
 ```
 ETH_RPC_URL=<http_rpc_url>
 WS_RPC_URL=<ws_rpc_url>
@@ -76,7 +81,7 @@ stated otherwise.*
 
 ### 0. Run the Foundry tests
 ```bash
-forge test -vvv
+$ forge test -vvv
 ```
 
 You should see an output that looks like:
@@ -97,7 +102,7 @@ event, the tests will fail.
 
 ### 1. Apply the `trade` patch
 ```bash
-git apply contracts/patches/trade.patch
+$ git apply contracts/patches/trade.patch
 ```
 
 Applying the patch will add a `Trade` event to the Uniswap V2 Router
@@ -108,7 +113,7 @@ https://github.com/shadow-hq/hackathon/blob/c920b32e1748f40d37d2d047b6034e661efb
 
 ### 2. Run the Foundry tests again
 ```bash
-forge test -vvv
+$ forge test -vvv
 ```
 
 Now you should see that the Foundry tests are passing after
@@ -127,12 +132,12 @@ the contract onto a locally running shadow fork.
 
 First deploy the shadow contract onto the shadow fork:
 ```bash
-shadow deploy UniswapV2Router02.sol:UniswapV2Router02 0x7a250d5630b4cf539739df2c5dacb4c659f2488d
+$ shadow deploy UniswapV2Router02.sol:UniswapV2Router02 0x7a250d5630b4cf539739df2c5dacb4c659f2488d
 ```
 
 Then start the local shadow fork:
 ```bash
-shadow fork
+$ shadow fork
 ```
 
 After a few seconds, you should see stdout logs that look like this, which
@@ -152,8 +157,8 @@ show that the shadow fork is receiving mainnet transactions.
 
 Then, in a separate terminal window, run the following command to view a stream of
 `Trade` events that are happening live on mainnet:
-```batch
-shadow events UniswapV2Router02.sol:UniswapV2Router02 Trade
+```bash
+$ shadow events UniswapV2Router02.sol:UniswapV2Router02 Trade
 ```
 
 You should start seeing output that looks like this:
@@ -186,16 +191,23 @@ deploy the contract onto a hosted shadow fork.
 TODO
 
 # FAQs
-### Why am I seeing failed transactions on my local shadow fork?
-This is expected. To reduce the CU cost of running a shadow
-fork, and to keep latency to a minimum, we only run a subset
-of the mainnet transactions on the local shadow fork. This
-means that some transactions will fail on the shadow fork
-because your local shadow fork does not have the exact same
-state as mainnet.
+### How do I get the original source code for a contract?
+You can use the Foundry's [`cast etherscan-source`](https://book.getfoundry.sh/reference/cast/cast-etherscan-source)
+command to get the original source code for a contract.
+```bash
+$ cast etherscan-source <address> -d contracts/src
+```
 
-Your hosted shadow fork *will* have the exact same state as
-mainnet. Your hosted shadow node runs like a standard node,
+### Why am I seeing failed transactions on my local shadow fork?
+This is expected. To reduce the CU cost of running a local shadow
+fork, and to keep the local shadow fork latency to a minimum,
+we only run a subset of the mainnet transactions on the local
+shadow fork. This means that some transactions will fail on the
+shadow fork because your local shadow fork does not have the exact
+same state as mainnet.
+
+**Your hosted shadow fork *will* have the exact same state as
+mainnet**. Your hosted shadow node runs like a standard node,
 and is latency optimized.
 
 ### How do I shadow a proxy contract?
