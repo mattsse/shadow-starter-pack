@@ -22,6 +22,8 @@ enum Commands {
     Deploy(cmd::deploy::Deploy),
     /// Start a local shadow fork
     Fork(cmd::fork::Fork),
+    /// Listen to events from a shadow contract
+    Events(cmd::events::Events),
 }
 
 /// Represents an error that can occur while running the CLI tool
@@ -31,6 +33,8 @@ enum CliError {
     DeployError(cmd::deploy::DeployError),
     /// Error related to the fork command
     ForkError(cmd::fork::ForkError),
+    /// Error related to the events command
+    EventsError(cmd::events::EventsError),
     /// Error that should never occur
     Never,
 }
@@ -40,6 +44,7 @@ impl fmt::Display for CliError {
         match self {
             CliError::DeployError(err) => write!(f, "Deploy error: {}", err),
             CliError::ForkError(err) => write!(f, "Fork error: {}", err),
+            CliError::EventsError(err) => write!(f, "Events error: {}", err),
             CliError::Never => write!(
                 f,
                 "This error should never occur, please file a bug report to help@tryshadow.xyz."
@@ -59,6 +64,10 @@ async fn main() -> Result<(), CliError> {
         }
         Some(Commands::Fork(fork)) => {
             fork.run().await.map_err(CliError::ForkError)?;
+            Ok(())
+        }
+        Some(Commands::Events(events)) => {
+            events.run().await.map_err(CliError::EventsError)?;
             Ok(())
         }
         None => Err(CliError::Never),

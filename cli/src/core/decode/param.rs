@@ -63,7 +63,7 @@ pub trait ToDynSolType {
 
 impl ToDynSolType for EventParam {
     fn to_dyn_sol_type(&self) -> Result<DynSolType, Box<dyn std::error::Error>> {
-        if self.components.len() > 0 {
+        if !self.components.is_empty() {
             let mut tuple_parts = Vec::new();
             for component in self.components.iter() {
                 let dyn_sol_type = component.to_dyn_sol_type()?;
@@ -83,7 +83,7 @@ impl ToDynSolType for EventParam {
 
 impl ToDynSolType for alloy_json_abi::Param {
     fn to_dyn_sol_type(&self) -> Result<DynSolType, Box<dyn std::error::Error>> {
-        if self.components.len() > 0 {
+        if !self.components.is_empty() {
             let mut tuple_parts = Vec::new();
             for component in self.components.iter() {
                 let dyn_sol_type = component.to_dyn_sol_type()?;

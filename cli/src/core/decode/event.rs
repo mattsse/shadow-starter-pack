@@ -16,7 +16,7 @@ use super::token::Token;
 ///     "to": "0x91364516d3cad16e1666261dbdbb39c881dbe9ee",
 ///     "value": "69000000000000000000"
 /// }
-fn decode_log(
+pub fn decode_log(
     log: &ethers::types::Log,
     event: &Event,
 ) -> Result<Value, Box<dyn std::error::Error>> {
@@ -220,11 +220,11 @@ impl ParamAndValue {
             // convert the array of values to an array of strings.
             if let ethabi::Token::Array(tokens) = self.value.underlying() {
                 let array_values = tokens.iter().map(|t| t.to_string()).collect::<Vec<_>>();
-                return serde_json::to_value(&array_values).unwrap();
+                return serde_json::to_value(array_values).unwrap();
             }
 
             // Otherwise, just convert the value to a string.
-            serde_json::to_value(&self.value.to_string()).unwrap()
+            serde_json::to_value(self.value.to_string()).unwrap()
         }
     }
 }

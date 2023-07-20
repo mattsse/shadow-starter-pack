@@ -66,7 +66,7 @@ impl Deploy {
 ///
 /// If the contract name is not provided, it is assumed to be the
 /// same as the file name.
-fn parse_contract_string(contract: &str) -> (String, String) {
+pub fn parse_contract_string(contract: &str) -> (String, String) {
     let mut parts = contract.splitn(2, ':');
     let file_name = parts.next().unwrap().to_owned();
     let contract_name = match parts.next() {
