@@ -1,4 +1,4 @@
-# Shadow Hackathon
+# Shadow Starter Pack
 
 <img src=".github/logo.png" alt="Shadow logo" width="120" />
 
@@ -28,7 +28,7 @@ if you still need to get set up with an account)
 **Est time: 5 mins**
 1. Clone this repository
 ```bash
-$ git clone git@github.com:shadow-hq/hackathon.git
+$ git clone git@github.com:shadow-hq/shadow-starter-pack.git
 ```
 2. Install the `shadow` CLI tool
 ```bash
@@ -112,7 +112,7 @@ Applying the patch will add a `Trade` event to the Uniswap V2 Router
 contract. The `Trade` event will be emitted once for every top-level
 swap transaction. Check out the patch diff here:
 
-https://github.com/shadow-hq/hackathon/blob/c920b32e1748f40d37d2d047b6034e661efbfc32/contracts/patches/trade.patch#L1-L133
+https://github.com/shadow-hq/shadow-starter-pack/blob/c920b32e1748f40d37d2d047b6034e661efbfc32/contracts/patches/trade.patch#L1-L133
 
 ### 2. Run the Foundry tests again
 ```bash
