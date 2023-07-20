@@ -4,7 +4,6 @@ use ethers::{
     providers::{JsonRpcClient, Middleware, ProviderError, PubsubClient},
     types::Filter,
 };
-
 use std::{str::FromStr, sync::Arc};
 use thiserror::Error;
 
@@ -120,7 +119,12 @@ impl<P: JsonRpcClient + PubsubClient> Events<P> {
 
     fn on_log(&self, log: ethers::types::Log) -> Result<(), EventsError> {
         let decoded = decode::event::decode_log(&log, &self.event)?;
-        println!("Event: {}", decoded);
+        let pretty = colored_json::to_colored_json_auto(&decoded).map_err(|e| {
+            EventsError::CustomError(format!("Error serializing decoded event to JSON: {}", e))
+        })?;
+        let tx_hash = format!("0x{}", hex::encode(log.transaction_hash.unwrap()));
+        println!("=> Transaction: {}", tx_hash);
+        println!("{}", pretty);
         Ok(())
     }
 }

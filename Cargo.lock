@@ -834,6 +834,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
+name = "colored_json"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74cb9ce6b86f6e54bfa9518df2eeeef65d424ec7244d083ed97229185e366a91"
+dependencies = [
+ "is-terminal",
+ "serde",
+ "serde_json",
+ "yansi 0.5.1",
+]
+
+[[package]]
 name = "comfy-table"
 version = "6.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4205,6 +4217,7 @@ dependencies = [
  "anvil-core",
  "async-trait",
  "clap",
+ "colored_json",
  "ethabi",
  "ethers",
  "hex",
