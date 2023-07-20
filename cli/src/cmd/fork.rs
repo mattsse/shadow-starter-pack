@@ -19,6 +19,10 @@ pub struct Fork {
     pub all_txs: Option<bool>,
 }
 
+/// Starts a local shadow fork using Anvil.
+///
+/// This command uses the [`crate::core::actions::Fork`] action
+/// under the hood, using the local file-based shadow store.
 impl Fork {
     pub async fn run(&self) -> Result<(), ForkError> {
         let http_rpc_url = env!("ETH_RPC_URL", "Please set an ETH_RPC_URL").to_owned();
@@ -40,7 +44,7 @@ impl Fork {
         );
 
         // Build the action
-        let fork = crate::core::actions::fork::Fork::new(
+        let fork = crate::core::actions::Fork::new(
             provider,
             shadow_resource,
             http_rpc_url,

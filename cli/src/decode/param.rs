@@ -7,6 +7,9 @@ pub trait ToEthAbiParamType {
     fn to_eth_abi_param_type(&self) -> Result<ParamType, Box<dyn std::error::Error>>;
 }
 
+/// Trait to convert an [`alloy_json_abi::EventParam`] to an [`ethabi::ParamType`].
+///
+/// We do this so that we can use the ethabi library to decode events.
 impl ToEthAbiParamType for EventParam {
     fn to_eth_abi_param_type(&self) -> Result<ParamType, Box<dyn std::error::Error>> {
         let dyn_sol_type = self.to_dyn_sol_type()?;
@@ -14,6 +17,19 @@ impl ToEthAbiParamType for EventParam {
     }
 }
 
+/// Trait to convert an [`alloy_dyn_abi::DynSolType`] to an [`ethabi::ParamType`].
+/// Used by the [`alloy_json_abi::EventParam`] [`ToEthAbiParamType`] trait.
+///
+/// This is a hack.
+///
+/// It's much easier to do the conversion:
+/// [`alloy_json_abi::EventParam`] -> [`alloy_dyn_abi::DynSolType`] -> [`ethabi::ParamType`].
+///
+/// It's more difficult to directly do the conversion:
+/// [`alloy_json_abi::EventParam`] -> [`ethabi::ParamType`].
+///
+/// We can remove this hack once we have a way to decode complex structs using
+/// the [`alloy_dyn_abi`] library.
 impl ToEthAbiParamType for DynSolType {
     fn to_eth_abi_param_type(&self) -> Result<ParamType, Box<dyn std::error::Error>> {
         match self {
@@ -61,6 +77,15 @@ pub trait ToDynSolType {
     fn to_dyn_sol_type(&self) -> Result<DynSolType, Box<dyn std::error::Error>>;
 }
 
+/// Trait to convert an [`alloy_json_abi::EventParam`] to a [`DynSolType`].
+/// Used by the [`alloy_json_abi::EventParam`] [`ToEthAbiParamType`] trait.
+///
+/// This uses the [`alloy_dyn_abi`] library to convert from an [`alloy_json_abi::EventParam`].
+/// The [`alloy_dyn_abi`] library contains a `parse` method that can parse a string into a
+/// [`DynSolType`].
+///
+/// We add some extra logic to handle the case where the [`alloy_json_abi::EventParam`] is a
+/// complex struct or an array.
 impl ToDynSolType for EventParam {
     fn to_dyn_sol_type(&self) -> Result<DynSolType, Box<dyn std::error::Error>> {
         if !self.components.is_empty() {

@@ -51,8 +51,8 @@ pub struct Fork<P: JsonRpcClient + 'static> {
 #[derive(Error, Debug)]
 pub enum ForkError {
     /// Catch-all error
-    #[error("DefaultError: {0}")]
-    DefaultError(String),
+    #[error("CustomError: {0}")]
+    CustomError(String),
     /// Provider error
     #[error("ProviderError: {0}")]
     ProviderError(#[from] ProviderError),
@@ -72,7 +72,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         let shadow_contracts = shadow_resource
             .list()
             .await
-            .map_err(|e| ForkError::DefaultError(e.to_string()))?;
+            .map_err(|e| ForkError::CustomError(e.to_string()))?;
 
         Ok(Self {
             provider,
@@ -101,13 +101,14 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         Ok(())
     }
 
-    /// Starts an anvil fork, which is used to deploy the shadow contract.
+    /// Starts an anvil fork, which is used as a local shadow fork.
     async fn start_anvil(&self) -> Result<(EthApi, NodeHandle), ForkError> {
         let anvil_args = anvil_args(self.http_rpc_url.as_str());
         let (api, node_handle) = anvil::spawn(anvil_args.into_node_config()).await;
         Ok((api, node_handle))
     }
 
+    /// Overrides the shadow contract bytecode on the anvil fork.
     async fn override_contracts(&self, api: &EthApi) -> Result<(), ForkError> {
         // Override the contracts
         for shadow_contract in &self.shadow_contracts {
@@ -118,12 +119,13 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
                 ),
             )
             .await
-            .map_err(|e| ForkError::DefaultError(e.to_string()))?;
+            .map_err(|e| ForkError::CustomError(e.to_string()))?;
         }
 
         Ok(())
     }
 
+    /// Replays a block on the anvil fork.
     async fn replay_block(
         &self,
         api: &EthApi,
@@ -137,7 +139,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
             .map_err(ForkError::ProviderError)?;
 
         if block.is_none() {
-            return Err(ForkError::DefaultError(format!(
+            return Err(ForkError::CustomError(format!(
                 "Block {} not found",
                 block_number
             )));
@@ -159,12 +161,8 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         // Send the transactions
         for tx in block.transactions {
             if self.should_replay(&tx, &receipts) {
-                // Impersonate the sender and send the transaction
+                // Give the wallet extra ETH for the transaction before sending it
                 api.anvil_set_balance(tx.from, ethers::types::U256::from("100000000000000000000"))
-                    .await
-                    .map_err(ForkError::BlockchainError)?;
-
-                api.anvil_impersonate_account(tx.from)
                     .await
                     .map_err(ForkError::BlockchainError)?;
                 api.send_raw_transaction(tx.rlp())
@@ -188,22 +186,23 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
     ) -> Result<HashMap<ethers::types::H256, TransactionReceipt>, ForkError> {
         let mut receipt_map = HashMap::new();
 
-        let mut set = JoinSet::new();
+        let mut join_set = JoinSet::new();
 
+        // Spawn a task for each transaction receipt fetch
         for tx in transactions.iter() {
             let tx_hash = tx.hash;
             let provider = self.provider.clone();
-            set.spawn(async move {
+            join_set.spawn(async move {
                 let receipt = provider.get_transaction_receipt(tx_hash).await?;
                 Ok::<Option<TransactionReceipt>, ProviderError>(receipt)
             });
         }
 
-        while let Some(result) = set.join_next().await {
+        while let Some(result) = join_set.join_next().await {
             let receipt = result
-                .map_err(|e| ForkError::DefaultError(e.to_string()))?
+                .map_err(|e| ForkError::CustomError(e.to_string()))?
                 .map_err(|e| {
-                    ForkError::DefaultError(format!("Error getting transaction receipt: {}", e))
+                    ForkError::CustomError(format!("Error getting transaction receipt: {}", e))
                 })?;
 
             match receipt {
@@ -211,7 +210,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
                     receipt_map.insert(receipt.transaction_hash, receipt);
                 }
                 None => {
-                    return Err(ForkError::DefaultError("Receipt not found.".to_string()));
+                    return Err(ForkError::CustomError("Receipt not found.".to_string()));
                 }
             }
         }
@@ -228,11 +227,13 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
             return true;
         }
 
+        // If the transaction is not to a shadowed contract, don't replay it
         let is_shadowed = tx
             .to
             .map(|to| self.is_shadowed(format!("0x{}", hex::encode(to.as_bytes())).as_str()))
             .unwrap_or(false);
 
+        // If the transaction is not successful, don't replay it
         let is_success = receipts
             .get(&tx.hash)
             .map(|receipt| {

@@ -54,8 +54,8 @@ pub struct Deploy<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource,
 #[derive(Error, Debug)]
 pub enum DeployError {
     /// Catch-all error
-    #[error("DefaultError: {0}")]
-    DefaultError(String),
+    #[error("CustomError: {0}")]
+    CustomError(String),
     /// Blockchain error
     #[error("BlockchainError: {0}")]
     BlockchainError(#[from] BlockchainError),
@@ -126,7 +126,7 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
         self.shadow_resource
             .upsert(shadow_contract)
             .await
-            .map_err(|e| DeployError::DefaultError(e.to_string()))?;
+            .map_err(|e| DeployError::CustomError(e.to_string()))?;
 
         Ok(())
     }
@@ -139,7 +139,7 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
             .map_err(DeployError::ArtifactError)?;
         match contract.bytecode {
             Some(bytecode) => Ok(bytecode),
-            None => Err(DeployError::DefaultError(
+            None => Err(DeployError::CustomError(
                 "Contract does not have bytecode".to_owned(),
             )),
         }
@@ -158,12 +158,12 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
 
         // Check that the response is valid
         if response.status != "1" {
-            return Err(DeployError::DefaultError(response.message));
+            return Err(DeployError::CustomError(response.message));
         }
 
         // Check that the response contains exactly one result
         if response.result.len() != 1 {
-            return Err(DeployError::DefaultError(
+            return Err(DeployError::CustomError(
                 "Expected exactly one result".to_owned(),
             ));
         }
@@ -184,12 +184,12 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
 
         // Check that the response is valid
         if response.status != "1" {
-            return Err(DeployError::DefaultError(response.message));
+            return Err(DeployError::CustomError(response.message));
         }
 
         // Check that the response contains exactly one result
         if response.result.len() != 1 {
-            return Err(DeployError::DefaultError(
+            return Err(DeployError::CustomError(
                 "Expected exactly one result".to_owned(),
             ));
         }
@@ -212,9 +212,7 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
 
         match response {
             Some(transaction) => Ok(transaction),
-            None => Err(DeployError::DefaultError(
-                "Transaction not found".to_owned(),
-            )),
+            None => Err(DeployError::CustomError("Transaction not found".to_owned())),
         }
     }
 
@@ -289,13 +287,13 @@ impl<E: EtherscanResource, A: ArtifactsResource, S: ShadowResource, P: JsonRpcCl
             Some(receipt) => match receipt.contract_address {
                 Some(address) => address,
                 None => {
-                    return Err(DeployError::DefaultError(
+                    return Err(DeployError::CustomError(
                         "Failed to get contract address".to_owned(),
                     ))
                 }
             },
             None => {
-                return Err(DeployError::DefaultError(
+                return Err(DeployError::CustomError(
                     "Failed to get transaction receipt".to_owned(),
                 ))
             }

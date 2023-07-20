@@ -7,12 +7,12 @@ use ethers::{
 use std::{str::FromStr, sync::Arc};
 use thiserror::Error;
 
-use crate::core::{
-    decode,
-    resources::{
+use crate::{
+    core::resources::{
         artifacts::ArtifactsResource,
         shadow::{ShadowContract, ShadowResource},
     },
+    decode,
 };
 
 /// Subscribes to events from a shadow contract on
@@ -118,7 +118,7 @@ impl<P: JsonRpcClient + PubsubClient> Events<P> {
     }
 
     fn on_log(&self, log: ethers::types::Log) -> Result<(), EventsError> {
-        let decoded = decode::event::decode_log(&log, &self.event)?;
+        let decoded = decode::decode_log(&log, &self.event)?;
         let pretty = colored_json::to_colored_json_auto(&decoded).map_err(|e| {
             EventsError::CustomError(format!("Error serializing decoded event to JSON: {}", e))
         })?;

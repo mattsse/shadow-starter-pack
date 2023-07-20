@@ -19,6 +19,11 @@ pub struct Events {
     pub event_signature: String,
 }
 
+/// Listens to events from a shadow contract on a local fork.
+///
+/// The command uses the [`crate::core::actions::Events`] action
+/// under the hood, using the local file-based artifact store,
+/// and the local file-based shadow store.
 impl Events {
     pub async fn run(&self) -> Result<(), EventsError> {
         // Parse the contract string
@@ -41,7 +46,7 @@ impl Events {
         );
 
         // Build the action
-        let events = crate::core::actions::events::Events::new(
+        let events = crate::core::actions::Events::new(
             file_name,
             contract_name,
             self.event_signature.to_owned(),
