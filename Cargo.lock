@@ -4208,6 +4208,7 @@ dependencies = [
  "ethabi",
  "ethers",
  "hex",
+ "log",
  "reqwest",
  "serde",
  "serde_json",

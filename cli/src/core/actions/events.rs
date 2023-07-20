@@ -92,7 +92,10 @@ impl<P: JsonRpcClient + PubsubClient> Events<P> {
         // Subscribe to log
         let mut stream = self.provider.subscribe_logs(&logs_filter).await?;
         while let Some(log) = stream.next().await {
-            self.on_log(log)?;
+            let result = self.on_log(log);
+            if let Err(e) = result {
+                log::warn!("Error processing log: {}", e);
+            }
         }
 
         Ok(())
