@@ -86,7 +86,10 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         // Start the block replay
         let mut stream = self.provider.subscribe_blocks().await?;
         while let Some(block) = stream.next().await {
-            self.replay_block(&api, block.number.unwrap()).await?;
+            let result = self.replay_block(&api, block.number.unwrap());
+            if let Err(e) = result.await {
+                log::warn!("Error replaying block: {}", e);
+            }
         }
 
         Ok(())

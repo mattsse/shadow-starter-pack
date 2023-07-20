@@ -24,7 +24,15 @@ pub struct ShadowContract {
 /// The Shadow store may be a file system, a database, or a remote service.
 #[async_trait]
 pub trait ShadowResource {
-    async fn get(&self, address: &str) -> Result<ShadowContract, Box<dyn std::error::Error>>;
+    async fn get_by_address(
+        &self,
+        address: &str,
+    ) -> Result<ShadowContract, Box<dyn std::error::Error>>;
+    async fn get_by_name(
+        &self,
+        file_name: &str,
+        contract_name: &str,
+    ) -> Result<ShadowContract, Box<dyn std::error::Error>>;
     async fn list(&self) -> Result<Vec<ShadowContract>, Box<dyn std::error::Error>>;
     async fn upsert(
         &self,
