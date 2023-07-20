@@ -149,6 +149,13 @@ fn merge(a: &mut Value, b: Value) {
     }
 }
 
+/// Represents a parameter and its decoded value.
+///
+/// The parameter can be a simple type (e.g. uint256)
+/// or a complex type (e.g. Swap).
+///
+/// The value can be a simple value (e.g. 1)
+/// or a complex value (e.g. (string, address, uint256)).
 struct ParamAndValue {
     pub param: Param,
     pub value: Token,
