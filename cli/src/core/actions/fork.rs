@@ -37,10 +37,14 @@ pub struct Fork<P: JsonRpcClient + 'static> {
     /// The Ethereum provider
     pub provider: Arc<Provider<P>>,
 
+    // The shadow contracts to use on the fork
     pub shadow_contracts: Vec<ShadowContract>,
 
     /// The HTTP RPC URL to use for the anvil fork
     pub http_rpc_url: String,
+
+    /// Whether to replay all transactions from mainnet
+    pub all_txs: bool,
 }
 
 #[allow(clippy::enum_variant_names)]
@@ -62,6 +66,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         provider: Provider<P>,
         shadow_resource: S,
         http_rpc_url: String,
+        all_txs: bool,
     ) -> Result<Self, ForkError> {
         let provider = Arc::new(provider);
         let shadow_contracts = shadow_resource
@@ -73,6 +78,7 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
             provider,
             shadow_contracts,
             http_rpc_url,
+            all_txs,
         })
     }
 
@@ -218,6 +224,10 @@ impl<P: JsonRpcClient + PubsubClient> Fork<P> {
         tx: &Transaction,
         receipts: &HashMap<ethers::types::H256, TransactionReceipt>,
     ) -> bool {
+        if self.all_txs {
+            return true;
+        }
+
         let is_shadowed = tx
             .to
             .map(|to| self.is_shadowed(format!("0x{}", hex::encode(to.as_bytes())).as_str()))
