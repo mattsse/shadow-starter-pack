@@ -191,6 +191,13 @@ deploy the contract onto a hosted shadow fork.
 TODO
 
 # FAQs
+### How do I get the original source code for a contract?
+You can use the Foundry's [`cast etherscan-source`](https://book.getfoundry.sh/reference/cast/cast-etherscan-source)
+command to get the original source code for a contract.
+```bash
+$ cast etherscan-source <address> -d contracts/src
+```
+
 ### Why am I seeing failed transactions on my local shadow fork?
 This is expected. To reduce the CU cost of running a local shadow
 fork, and to keep the local shadow fork latency to a minimum,
