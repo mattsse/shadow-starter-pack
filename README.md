@@ -104,6 +104,9 @@ event, the tests will fail.
 ```bash
 $ git apply contracts/patches/trade.patch
 ```
+A git patch is a small file that represents of a set of changes.
+You can think of it as a text file that contains a git diff,
+which you can apply to a repository.
 
 Applying the patch will add a `Trade` event to the Uniswap V2 Router
 contract. The `Trade` event will be emitted once for every top-level
@@ -191,6 +194,18 @@ deploy the contract onto a hosted shadow fork.
 TODO
 
 # FAQs
+### Why do I need an Etherscan API key?
+You'll need an Etherscan API key to fetch the original source code for
+a contract. You'll also need it to get the original contract creation
+transaction for the shadowed contract, so that shadow can use the
+original transaction to deploy the shadow contract.
+
+You can get an Etherscan API key for free here:
+https://docs.etherscan.io/getting-started/viewing-api-usage-statistics
+
+Note: You only need an API key to run your own local shadow fork.
+You do *not* need one when using the hosted Shadow product.
+
 ### How do I get the original source code for a contract?
 You can use the Foundry's [`cast etherscan-source`](https://book.getfoundry.sh/reference/cast/cast-etherscan-source)
 command to get the original source code for a contract.
