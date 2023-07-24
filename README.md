@@ -191,7 +191,18 @@ You should start seeing output that looks like this:
 Now that we've tested our shadow contract locally, we're going to
 deploy the contract onto a hosted shadow fork.
 
-TODO
+1. Open the editor for the contract at https://app.tryshadow.xyz/editor/0x7a250d5630b4cf539739df2c5dacb4c659f2488d.
+1. Replace the `UniswapV2Router02` code with the changes in the
+`UniswapV2Router02.sol` file. The final file should look like
+[this](https://gist.github.com/emilyhsia/ca3b505237b1627045f1bd9d9abf1a60).
+1. Hit the "Deploy" button.
+
+Now your shadow contract should be deployed on your hosted shadow fork!
+If you visit the [contract page](https://app.tryshadow.xyz/explorer/addresses/0x7a250d5630b4cf539739df2c5dacb4c659f2488d),
+you should see your new contract source code, as well as the `Trade` event in the
+"Event Schemas" tab.
+
+![Event Schemas Tab](.github/event_schemas.png)
 
 # FAQs
 ### Why do I need an Etherscan API key?
