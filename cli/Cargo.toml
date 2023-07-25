@@ -15,7 +15,8 @@ async-trait = "0.1.71"
 clap = { version = "4.3.12", features = ["derive"] }
 colored_json = "3.2.0"
 ethabi = {version="18.0.0", features= ["serde"] }
-ethers = "2.0"
+ethers = { git = "https://github.com/gakonst/ethers-rs" }
+svm-rs = "=0.2.24"
 hex = "0.4.3"
 log = "0.4.19"
 reqwest = { version = "0.11.18", features = ["json"] }
