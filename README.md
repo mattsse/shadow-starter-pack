@@ -40,7 +40,6 @@ $ cargo install --path cli
 ETH_RPC_URL=<http_rpc_url>
 WS_RPC_URL=<ws_rpc_url>
 ETHERSCAN_API_KEY=<etherscan_api_key>
-SHADOW_PROJECT_ID=<your_project_id>
 ```
 
 # Tutorial
